@@ -10,3 +10,4 @@ deploy:
   on:
     tags: true
     repo: jagoda/mummy
+    all_branches: true
