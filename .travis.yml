@@ -1,0 +1,12 @@
+language: node_js
+node_js:
+- '0.11'
+- '0.10'
+deploy:
+  provider: npm
+  email: jeffrey.jagoda@gmail.com
+  api_key:
+    secure: UoK0ECHyP9gWaWjJYfZSsSwPmnTvwoFwDDvpVaJej4YyVmXMXQvj1w+o6hmMJDxc4BaS2QB1X9pmCswWr1/03yVzWZhPSeR4YMYNQ6YqUnz+62HFMx8lnatpTTRvFCOgmt8ElMmyLyw+SVjI6xFNBlHMAfGP0OkxqJUut6AJUBk=
+  on:
+    tags: true
+    repo: jagoda/mummy
