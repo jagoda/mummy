@@ -1,0 +1,33 @@
+{
+  "name": "mummy",
+  "version": "0.0.0",
+  "description": "Hapi request mocking for ZombieJS",
+  "main": "lib/mummy",
+  "scripts": {
+    "test": "gulp"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jagoda/mummy.git"
+  },
+  "keywords": [
+    "zombie",
+    "test",
+    "testing",
+    "hapi"
+  ],
+  "author": "Jeff Jagoda <jeffrey.jagoda@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jagoda/mummy/issues"
+  },
+  "homepage": "https://github.com/jagoda/mummy",
+  "devDependencies": {
+    "gulp": "^3.8.6",
+    "gulp-jshint": "^1.8.0",
+    "gulp-lab": "0.0.10",
+    "jshint-stylish": "^0.4.0",
+    "lab": "^3.2.1",
+    "lodash": "^2.4.1"
+  }
+}
