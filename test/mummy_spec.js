@@ -222,4 +222,30 @@ describe("mummy", function () {
 			done();
 		});
 	});
+
+	describe("composing a pack from a manifest path", function () {
+		var response;
+
+		before(function (done) {
+			var manifest = path.join(__dirname, "fixtures", "manifest.json");
+			var plugins  = path.join(__dirname, "fixtures");
+
+			Q.ninvoke(mummy, "compose", manifest, plugins)
+			.then(function (browser) {
+				return browser.visit("/")
+				.then(function () {
+					return browser;
+				});
+			})
+			.then(function (browser) {
+				response = browser.text("body");
+			})
+			.nodeify(done);
+		});
+
+		it("injects requests into the pack servers", function (done) {
+			expect(response, "response").to.equal("test plugin");
+			done();
+		});
+	});
 });

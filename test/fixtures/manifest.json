@@ -1,0 +1,8 @@
+{
+	"plugins" : {
+		"./test" : {}
+	},
+	"servers" : [
+		{ "port" : "$env.PORT" }
+	]
+}
