@@ -3,7 +3,7 @@ mummy
 
 [![Build Status](https://travis-ci.org/jagoda/mummy.svg?branch=master)](https://travis-ci.org/jagoda/mummy)
 
-> Hapi request mocking for [Zombie.js][zombie]
+> [Hapi][hapi] request mocking for [Zombie.js][zombie]
 
 ## Overview
 
