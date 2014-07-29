@@ -1,6 +1,7 @@
 "use strict";
 var Browser = require("zombie");
 var Hapi    = require("hapi");
+var nock    = require("nock");
 var Lab     = require("lab");
 var mummy   = require("..");
 var path    = require("path");
@@ -15,11 +16,25 @@ var it       = Lab.it;
 
 describe("mummy", function () {
 
+	before(function (done) {
+		nock.disableNetConnect();
+		done();
+	});
+
+	after(function (done) {
+		nock.enableNetConnect();
+		done();
+	});
+
 	describe("wrapping a Hapi server", function () {
-		var browser;
+		var localText;
+		var remoteRequest;
+		var remoteText;
 		var server;
 
 		before(function (done) {
+			var browser;
+
 			server = new Hapi.Server();
 
 			server.route({
@@ -29,14 +44,37 @@ describe("mummy", function () {
 				handler : { file : path.join(__dirname, "fixtures", "test.html") }
 			});
 
+			remoteRequest = nock("http://example.com")
+			.get("/")
+			.reply(200, "boo!");
+
 			browser = new Browser();
 			mummy.embalm(server, browser);
 
-			browser.visit("/", done);
+			browser.visit("/")
+			.then(function () {
+				localText = browser.text("title");
+				return browser.visit("http://example.com");
+			})
+			.then(function () {
+				remoteText = browser.text("body");
+			})
+			.nodeify(done);
 		});
 
-		it("injects requests", function (done) {
-			expect(browser.text("title"), "wrong title").to.equal("test page");
+		after(function (done) {
+			nock.cleanAll();
+			done();
+		});
+
+		it("injects local requests", function (done) {
+			expect(localText, "wrong title").to.equal("test page");
+			done();
+		});
+
+		it("does not inject remote requests", function (done) {
+			expect(remoteRequest.isDone(), "no remote request").to.be.true;
+			expect(remoteText, "wrong body").to.equal("boo!");
 			done();
 		});
 	});
