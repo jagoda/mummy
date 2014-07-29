@@ -4,6 +4,7 @@
   "description": "Hapi request mocking for ZombieJS",
   "main": "lib/mummy",
   "scripts": {
+    "coverage": "gulp coverage && xdg-open coverage.html || open coverage.html",
     "test": "gulp"
   },
   "repository": {
@@ -26,12 +27,14 @@
     "gulp": "^3.8.6",
     "gulp-jshint": "^1.8.0",
     "gulp-lab": "0.0.10",
-    "hapi": "^6.2.1",
     "jshint-stylish": "^0.4.0",
     "lab": "^3.2.1",
-    "lodash": "^2.4.1",
     "nock": "^0.42.2",
     "sinon": "^1.10.3",
     "zombie": "^2.0.0-alpha31"
+  },
+  "dependencies": {
+    "hapi": "^6.2.1",
+    "lodash": "^2.4.1"
   }
 }
