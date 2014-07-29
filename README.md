@@ -46,3 +46,4 @@ Alternatively, `mummy` can wrap a single `Browser` instance as follows:
 
 [hapi]: https://github.com/spumko/hapi "Hapi"
 [zombie]: https://github.com/assaf/zombie "Zombie.js"
+[zombie-ext]: https://github.com/assaf/zombie/tree/master/doc/new#extending-the-browser "Zombie Extensions"
