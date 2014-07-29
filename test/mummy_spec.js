@@ -6,6 +6,7 @@ var nock    = require("nock");
 var Lab     = require("lab");
 var mummy   = require("..");
 var path    = require("path");
+var Q       = require("q");
 var sinon   = require("sinon");
 var _       = require("lodash");
 
@@ -186,6 +187,38 @@ describe("mummy", function () {
 			expect(portText, "explicit port").to.equal("server 1");
 			expect(anonymousText1, "anonymous http").to.equal("server 2");
 			expect(anonymousText2, "anonymous https").to.equal("server 3");
+			done();
+		});
+	});
+
+	describe("composing a pack from a manifest object", function () {
+		var response;
+
+		before(function (done) {
+			var manifest = {
+				plugins : {
+					"./test" : {}
+				},
+				servers : [
+					{ port : "$env.PORT" }
+				]
+			};
+
+			Q.ninvoke(mummy, "compose", manifest, path.join(__dirname, "fixtures"))
+			.then(function (browser) {
+				return browser.visit("/")
+				.then(function () {
+					return browser;
+				});
+			})
+			.then(function (browser) {
+				response = browser.text("body");
+			})
+			.nodeify(done);
+		});
+
+		it("injects requests into the pack servers", function (done) {
+			expect(response, "response").to.equal("test plugin");
 			done();
 		});
 	});
