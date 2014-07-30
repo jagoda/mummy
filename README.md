@@ -37,6 +37,18 @@ objects to be augmented with additional functionality. Using this approach,
 Only requests with URLs matching the hostname and port of one of the servers
 in the pack will be injected. All other requests will be processed normally.
 
+## Wrapping a Full Application
+
+`mummy` can construct a `pack` from a manifest and augment the `Browser` API
+so that all `Browser` instances created in any test cases can make requests to
+the pack as follows:
+
+	var mummy = require("mummy");
+
+	before(function (done) {
+		mummy.extend(manifestPath, done);
+	});
+
 ## Wrapping a Single Browser
 
 Alternatively, `mummy` can wrap a single `Browser` instance as follows (passing
@@ -57,7 +69,7 @@ either a pack or server):
 
 Returns a `Browser` extension suitable for passing to `Browser.extend()`.
 
-### mummy.compose(manifest, [ path ], callback)
+### mummy.compose(manifest, [path], callback)
 
  + **manifest** -- either a manifest object or a path to a manifest file.
  + **path** -- a path to load relative plugins from. Required if `manifest` is
@@ -76,6 +88,18 @@ Create a `Browser` instance for a `pack` defined by the manifest.
 
 Returns the original `Browser` instance after it has been augmented to redirect
 requests to the pack.
+
+### mummy.extend(manifest, [path], callback)
+
+ + **manifest** -- either a manifest object or a path to a manifest file.
+ + **path** -- a path to load relative plugins from. Required if `manifest` is
+     an object, but optional if it is a path. If a manifest path is provided
+     without a plugin path, plugins will be loaded from the directory that the
+     manifest is in.
+ + **callback** -- a callback function receiving arguments of the form
+     `(error)` depending on if the pack was successfully created.
+
+Creates and loads a `Browser` extension for the `pack` defined by the manifest.
 
 [hapi]: https://github.com/spumko/hapi "Hapi"
 [zombie]: https://github.com/assaf/zombie "Zombie.js"
