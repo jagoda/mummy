@@ -53,7 +53,7 @@ either a pack or server):
 
 ### mummy(pack)
 
- + **hapi** -- a `Pack` or `Server` instance to create a `Browser` extension
+ + **pack** -- a `Pack` or `Server` instance to create a `Browser` extension
      for.
 
 Returns a `Browser` extension suitable for passing to `Browser.extend()`.
