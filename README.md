@@ -7,12 +7,11 @@ mummy
 
 ## Overview
 
+	npm install mummy
+
 `mummy` is a browser extension for the [Zombie.js][zombie] headless browser
 testing framework that allows using `Browser` objects with [Hapi][hapi] servers
 without having to start the server.
-
-	npm install mummy
-
 
 	var Browser = require("zombie");
 	var mummy   = require("mummy");
