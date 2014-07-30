@@ -69,15 +69,16 @@ either a pack or server):
 
 Returns a `Browser` extension suitable for passing to `Browser.extend()`.
 
-### mummy.compose(manifest, [path], callback)
+### mummy.compose(manifest, [path], [callback])
 
  + **manifest** -- either a manifest object or a path to a manifest file.
  + **path** -- a path to load relative plugins from. Required if `manifest` is
      an object, but optional if it is a path. If a manifest path is provided
      without a plugin path, plugins will be loaded from the directory that the
      manifest is in.
- + **callback** -- a callback function receiving arguments of the form
-     `(error, browser)` depending on if the pack was successfully created.
+ + **callback** -- _Optional_ a callback function receiving arguments of the
+     form `(error, browser)` depending on if the pack was successfully created.
+     If not provided, a promise is returned.
 
 Create a `Browser` instance for a `pack` defined by the manifest.
 
@@ -89,15 +90,16 @@ Create a `Browser` instance for a `pack` defined by the manifest.
 Returns the original `Browser` instance after it has been augmented to redirect
 requests to the pack.
 
-### mummy.extend(manifest, [path], callback)
+### mummy.extend(manifest, [path], [callback])
 
  + **manifest** -- either a manifest object or a path to a manifest file.
  + **path** -- a path to load relative plugins from. Required if `manifest` is
      an object, but optional if it is a path. If a manifest path is provided
      without a plugin path, plugins will be loaded from the directory that the
      manifest is in.
- + **callback** -- a callback function receiving arguments of the form
-     `(error)` depending on if the pack was successfully created.
+ + **callback** -- _Optional_ a callback function receiving arguments of the
+     form `(error)` depending on if the pack was successfully created. If not
+     provided, a promise is returned.
 
 Creates and loads a `Browser` extension for the `pack` defined by the manifest.
 
