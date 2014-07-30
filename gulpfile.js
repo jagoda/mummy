@@ -9,7 +9,7 @@ var _       = require("lodash");
 
 var JSHINTRC     = ".jshintrc";
 var SOURCE_FILES = [ "*.js", "lib/**/*.js" ];
-var TEST_FILES   = [ "test/**/*_spec.js" ];
+var TEST_FILES   = [ "test/setup.js", "test/**/*_spec.js" ];
 
 function runJshint (files, overrides) {
 	var options = JSON.parse(fs.readFileSync(path.join(__dirname, JSHINTRC)));
