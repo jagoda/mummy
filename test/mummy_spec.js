@@ -20,7 +20,7 @@ describe("mummy", function () {
 
 	function removeExtension () {
 		// Zombie does not expose a clean way to clear extensions.
-		Browser._extensions = _.without(Browser._extensions, mummy);
+		Browser._extensions = [];
 	}
 
 	before(function (done) {
@@ -270,6 +270,77 @@ describe("mummy", function () {
 
 		it("injects requests into the pack servers", function (done) {
 			expect(response, "response").to.equal("test plugin");
+			done();
+		});
+	});
+
+	describe("loading a browser extension from a manifest object", function () {
+		var response;
+
+		before(function (done) {
+			var manifest = {
+				plugins : {
+					"./test" : {}
+				},
+				servers : [
+					{ port : "$env.PORT" }
+				]
+			};
+
+			Q.ninvoke(mummy, "extend", manifest, path.join(__dirname, "fixtures"))
+			.then(function () {
+				var browser = new Browser();
+
+				return browser.visit("/")
+				.then(function () {
+					return browser;
+				});
+			})
+			.then(function (browser) {
+				response = browser.text("body");
+			})
+			.nodeify(done);
+		});
+
+		after(function (done) {
+			removeExtension();
+			done();
+		});
+
+		it("injects requests from all browsers into the pack", function (done) {
+			expect(response, "wrong response").to.equal("test plugin");
+			done();
+		});
+	});
+
+	describe("loading a browser extension from a manifest file", function () {
+		var response;
+
+		before(function (done) {
+			var manifest = path.join(__dirname, "fixtures", "manifest.json");
+
+			Q.ninvoke(mummy, "extend", manifest)
+			.then(function () {
+				var browser = new Browser();
+
+				return browser.visit("/")
+				.then(function () {
+					return browser;
+				});
+			})
+			.then(function (browser) {
+				response = browser.text("body");
+			})
+			.nodeify(done);
+		});
+
+		after(function (done) {
+			removeExtension();
+			done();
+		});
+
+		it("injects requests from all browsers into the pack", function (done) {
+			expect(response, "wrong response").to.equal("test plugin");
 			done();
 		});
 	});
