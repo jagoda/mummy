@@ -274,6 +274,23 @@ describe("mummy", function () {
 		});
 	});
 
+	describe("composing a pack without a callback", function () {
+		var result;
+
+		before(function (done) {
+			result = mummy.compose(path.join(__dirname, "fixtures", "manifest.json"));
+			done();
+		});
+
+		it("returns a promise for a browser", function (done) {
+			expect(result.then, "not a promise").to.be.a("function");
+			result.then(function (browser) {
+				expect(browser, "not a browser").to.be.an.instanceOf(Browser);
+				done();
+			});
+		});
+	});
+
 	describe("loading a browser extension from a manifest object", function () {
 		var response;
 
@@ -341,6 +358,25 @@ describe("mummy", function () {
 
 		it("injects requests from all browsers into the pack", function (done) {
 			expect(response, "wrong response").to.equal("test plugin");
+			done();
+		});
+	});
+
+	describe("loading a browser extension from a manifest without a callback", function () {
+		var result;
+
+		before(function (done) {
+			result = mummy.extend(path.join(__dirname, "fixtures", "manifest.json"));
+			done();
+		});
+
+		after(function (done) {
+			removeExtension();
+			done();
+		});
+
+		it("returns a promise", function (done) {
+			expect(result.then, "not a promise").to.be.a("function");
 			done();
 		});
 	});
