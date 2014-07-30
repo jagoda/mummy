@@ -5,9 +5,9 @@ mummy
 
 > [Hapi][hapi] request mocking for [Zombie.js][zombie]
 
-## Overview
-
 	npm install mummy
+
+## Overview
 
 `mummy` is a browser extension for the [Zombie.js][zombie] headless browser
 testing framework that allows using `Browser` objects with [Hapi][hapi] servers
