@@ -425,4 +425,39 @@ describe("mummy", function () {
 			});
 		});
 	});
+
+	describe("wrapping a pack that leverages the start-up event", function () {
+		var pack;
+		var spy;
+
+		before(function (done) {
+			var plugin;
+
+			pack = new Hapi.Pack();
+			spy  = sinon.spy();
+
+			plugin = {
+				name     : "test plugin",
+				register : function (plugin, options, done) {
+					plugin.events.on("start", spy);
+					done();
+				}
+			};
+
+			pack.server();
+			pack.register(plugin, done);
+		});
+
+		it("simulates server start-up on first visit", function (done) {
+			var browser = new Browser();
+
+			mummy.embalm(pack, browser);
+			expect(spy.called, "spy called before start").to.be.false;
+
+			browser.visit("/", function () {
+				expect(spy.called, "spy not called after start").to.be.true;
+				done();
+			});
+		});
+	});
 });
