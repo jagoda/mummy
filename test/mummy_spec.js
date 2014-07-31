@@ -424,6 +424,21 @@ describe("mummy", function () {
 				done();
 			});
 		});
+
+		it("only starts the pack once", function (done) {
+			var browser1 = new Browser();
+			var browser2 = new Browser();
+
+			mummy.embalm(pack, browser1);
+			mummy.embalm(pack, browser2);
+
+			Q.all([ browser1.visit("/"), browser2.visit("/"), browser2.visit("/") ])
+			.fail(function () { /* ignore errors */ })
+			.then(function () {
+				expect(spy.callCount, "multiple starts").to.equal(1);
+			})
+			.nodeify(done);
+		});
 	});
 
 	describe("wrapping a pack that leverages the start-up event", function () {
@@ -458,6 +473,21 @@ describe("mummy", function () {
 				expect(spy.called, "spy not called after start").to.be.true;
 				done();
 			});
+		});
+
+		it("only runs the start-up simulation once", function (done) {
+			var browser1 = new Browser();
+			var browser2 = new Browser();
+
+			mummy.embalm(pack, browser1);
+			mummy.embalm(pack, browser2);
+
+			Q.all([ browser1.visit("/"), browser2.visit("/"), browser2.visit("/") ])
+			.fail(function () { /* ignore errors */ })
+			.then(function () {
+				expect(spy.callCount, "multiple start events").to.equal(1);
+			})
+			.nodeify(done);
 		});
 	});
 });
