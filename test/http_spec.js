@@ -3,6 +3,7 @@ var Browser   = require("zombie");
 var Lab       = require("lab");
 var mummy     = require("..");
 var nock      = require("nock");
+var Q         = require("q");
 var utilities = require("./helpers/utilities");
 
 var after    = Lab.after;
@@ -86,6 +87,36 @@ describe("The HTTP API extension", function () {
 		})
 		.fin(function () {
 			nock.cleanAll();
+		})
+		.nodeify(done);
+	});
+
+	it("defaults to the GET method", function (done) {
+		var request = nock("http://google.com").get("/").reply(200, "google");
+
+		Q.all([
+			browser.http({ url : "/" }),
+			browser.http({ url : "http://google.com" })
+		])
+		.spread(function (local, remote) {
+			expect(local.statusCode, "local status").to.equal(200);
+			expect(local.payload, "local payload").to.equal("server 0");
+
+			expect(request.isDone(), "no remote request").to.be.true;
+			expect(remote.statusCode, "remote status").to.equal(200);
+			expect(remote.payload, "remote payload").to.equal("google");
+		})
+		.fin(function () {
+			nock.cleanAll();
+		})
+		.nodeify(done);
+	});
+
+	it("defaults to the root path", function (done) {
+		browser.http({ method : "GET" })
+		.then(function (response) {
+			expect(response.statusCode, "status").to.equal(200);
+			expect(response.payload, "payload").to.equal("server 0");
 		})
 		.nodeify(done);
 	});
