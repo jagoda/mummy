@@ -3,7 +3,7 @@ mummy
 
 [![Build Status](https://travis-ci.org/jagoda/mummy.svg?branch=master)](https://travis-ci.org/jagoda/mummy)
 
-> [Hapi][hapi] request mocking for [Zombie.js][zombie]
+> [Hapi][hapi] request mocking with [Zombie.js][zombie] and [Nipple][nipple].
 
 	npm install mummy
 
@@ -60,6 +60,17 @@ either a pack or server):
 	var browser = new Browser();
 	mummy.embalm(server, browser);
 
+## Raw HTTP Requests
+
+`mummy` also provides the ability to make "raw" HTTP requests to wrapped packs.
+This can be useful for testing REST APIs. For example:
+
+	var browser = new Browser();
+
+	browser.http({ method : "GET", url : "/" }).then(function (response) {
+		expect(response.statusCode).to.equal(200);
+	});
+
 ## API
 
 ### mummy(pack)
@@ -103,6 +114,26 @@ requests to the pack.
 
 Creates and loads a `Browser` extension for the `pack` defined by the manifest.
 
+### browser.http(options, [callback])
+
+ + **options** -- an object representing the request.
+ + **callback** -- _Optional_ a callback function receiving arguments of the
+   form `(error, response)` depending on if the response is successful. If not
+   provided, a promise is returned.
+
+The options hash can include the following:
+
+ + **method** -- the HTTP request method. Defaults to `"GET"`.
+ + **url** -- the path or URL to request. Defaults to `"/"`.
+ + **headers** -- an object defining request headers.
+
+Performs a "raw" HTTP request. The [server.inject()][hapi-inject] method from
+`Hapi` is used for requests to wrapped servers while [Nipple][nipple] is used
+for requests to URLs not belonging to wrapped servers. Additional options are
+supported for both (see the respective docs for details).
+
 [hapi]: https://github.com/spumko/hapi "Hapi"
+[hapi-inject]: https://github.com/hapijs/hapi/blob/master/docs/Reference.md#serverinjectoptions-callback "server.inject()"
+[nipple]: https://github.com/hapijs/nipple "Nipple"
 [zombie]: https://github.com/assaf/zombie "Zombie.js"
 [zombie-ext]: https://github.com/assaf/zombie/tree/master/doc/new#extending-the-browser "Zombie Extensions"
