@@ -12,84 +12,81 @@ var expect   = Lab.expect;
 var it       = Lab.it;
 
 describe("The HTTP API extension", function () {
-	var annonymousHttp;
-	var annonymousHttps;
-	var defaultHost;
-	var explicitHost;
-	var explicitPort;
-	var remoteRequest;
-	var remoteResponse;
+	var browser;
 
 	before(function (done) {
 		var pack = utilities.createPack();
-		var browser;
 
 		nock.disableNetConnect();
-		remoteRequest = nock("http://google.com").get("/").reply(200, "google");
 
 		Browser.extend(mummy(pack));
 		browser = new Browser();
-
-		browser.http({ method : "GET", url : "/" })
-		.then(function (result) {
-			defaultHost = result;
-			return browser.http({ method : "GET", url : "http://example.com" });
-		})
-		.then(function (result) {
-			explicitHost = result;
-			return browser.http({ method : "GET", url : "http://localhost:42" });
-		})
-		.then(function (result) {
-			explicitPort = result;
-			return browser.http({ method : "GET", url : "http://localhost:80/" });
-		})
-		.then(function (result) {
-			annonymousHttp = result;
-			return browser.http({ method : "GET", url : "https://localhost/" });
-		})
-		.then(function (result) {
-			annonymousHttps = result;
-			return browser.http({ method : "GET", url : "http://google.com" });
-		})
-		.then(function (result) {
-			remoteResponse = result;
-		})
-		.nodeify(done);
+		done();
 	});
 
 	after(function (done) {
 		utilities.removeExtensions();
-		nock.cleanAll();
 		nock.enableNetConnect();
 		done();
 	});
 
 	it("uses the first pack server as the default site", function (done) {
-		expect(defaultHost.statusCode, "status").to.equal(200);
-		expect(defaultHost.payload, "payload").to.equal("server 0");
-		done();
+		browser.http({ method : "GET", url : "/" })
+		.then(function (response) {
+			expect(response.statusCode, "status").to.equal(200);
+			expect(response.payload, "payload").to.equal("server 0");
+		})
+		.nodeify(done);
 	});
 
-	it("injects local requests based on hostname and port", function (done) {
-		expect(explicitHost.statusCode, "explicit host status").to.equal(200);
-		expect(explicitHost.payload, "explicit host payload").to.equal("server 0");
+	it("injects local requests to an explicit hostname", function (done) {
+		browser.http({ method : "GET", url : "http://example.com" })
+		.then(function (response) {
+			expect(response.statusCode, "status").to.equal(200);
+			expect(response.payload, "payload").to.equal("server 0");
+		})
+		.nodeify(done);
+	});
 
-		expect(explicitPort.statusCode, "explicit port status").to.equal(200);
-		expect(explicitPort.payload, "explicit port payload").to.equal("server 1");
+	it("injects local requests to an explicit port", function (done) {
+		browser.http({ method : "GET", url : "http://localhost:42" })
+		.then(function (response) {
+			expect(response.statusCode, "status").to.equal(200);
+			expect(response.payload, "payload").to.equal("server 1");
+		})
+		.nodeify(done);
+	});
 
-		expect(annonymousHttp.statusCode, "http status").to.equal(200);
-		expect(annonymousHttp.payload, "http payload").to.equal("server 2");
+	it("uses port 80 as the default HTTP port", function (done) {
+		browser.http({ method : "GET", url : "http://localhost/" })
+		.then(function (response) {
+			expect(response.statusCode, "status").to.equal(200);
+			expect(response.payload, "payload").to.equal("server 2");
+		})
+		.nodeify(done);
+	});
 
-		expect(annonymousHttps.statusCode, "https status").to.equal(200);
-		expect(annonymousHttps.payload, "https payload").to.equal("server 3");
-
-		done();
+	it("uses port 443 as the default HTTPS port", function (done) {
+		browser.http({ method : "GET", url : "https://localhost/" })
+		.then(function (response) {
+			expect(response.statusCode, "https status").to.equal(200);
+			expect(response.payload, "https payload").to.equal("server 3");
+		})
+		.nodeify(done);
 	});
 
 	it("does not inject remote requests", function (done) {
-		expect(remoteRequest.isDone(), "no remote request").to.be.true;
-		expect(remoteResponse.statusCode, "status").to.equal(200);
-		expect(remoteResponse.payload, "payload").to.equal("google");
-		done();
+		var request = nock("http://google.com").get("/").reply(200, "google");
+
+		browser.http({ method : "GET", url : "http://google.com" })
+		.then(function (response) {
+			expect(request.isDone(), "no remote request").to.be.true;
+			expect(response.statusCode, "status").to.equal(200);
+			expect(response.payload, "payload").to.equal("google");
+		})
+		.fin(function () {
+			nock.cleanAll();
+		})
+		.nodeify(done);
 	});
 });
