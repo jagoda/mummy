@@ -36,6 +36,7 @@
   "dependencies": {
     "hapi": "^6.2.1",
     "lodash": "^2.4.1",
+    "nipple": "^2.5.4",
     "q": "^1.0.1"
   },
   "peerDependencies": {

@@ -1,14 +1,13 @@
 "use strict";
-var Browser = require("zombie");
-var fs      = require("fs");
-var Hapi    = require("hapi");
-var nock    = require("nock");
-var Lab     = require("lab");
-var mummy   = require("..");
-var path    = require("path");
-var Q       = require("q");
-var sinon   = require("sinon");
-var _       = require("lodash");
+var Browser   = require("zombie");
+var Hapi      = require("hapi");
+var nock      = require("nock");
+var Lab       = require("lab");
+var mummy     = require("..");
+var path      = require("path");
+var Q         = require("q");
+var sinon     = require("sinon");
+var utilities = require("./helpers/utilities");
 
 var after    = Lab.after;
 var before   = Lab.before;
@@ -17,11 +16,6 @@ var expect   = Lab.expect;
 var it       = Lab.it;
 
 describe("mummy", function () {
-
-	function removeExtension () {
-		// Zombie does not expose a clean way to clear extensions.
-		Browser._extensions = [];
-	}
 
 	before(function (done) {
 		nock.disableNetConnect();
@@ -100,7 +94,7 @@ describe("mummy", function () {
 
 		after(function (done) {
 			embalm.restore();
-			removeExtension();
+			utilities.removeExtensions();
 			done();
 		});
 
@@ -121,30 +115,8 @@ describe("mummy", function () {
 		var anonymousText2;
 
 		before(function (done) {
-			var pack    = new Hapi.Pack();
+			var pack = utilities.createPack();
 			var browser;
-
-			pack.server("example.com");  // http://example.com:80
-			pack.server(42);             // http://localhost:42
-			pack.server();               // http://localhost:80
-			pack.server({                // https://localhost:443
-				tls : {
-					cert : fs.readFileSync(path.join(__dirname, "fixtures", "cert.pem")),
-					key  : fs.readFileSync(path.join(__dirname, "fixtures", "key.pem"))
-				}
-			});
-
-			// FIXME: depending on `_servers` is a little hackish...
-			_.each(pack._servers, function (server, index) {
-				server.route({
-					method : "GET",
-					path   : "/",
-
-					handler : function (request, reply) {
-						reply("server " + index);
-					}
-				});
-			});
 
 			Browser.extend(mummy(pack));
 			browser = new Browser();
@@ -173,7 +145,7 @@ describe("mummy", function () {
 		});
 
 		after(function (done) {
-			removeExtension();
+			utilities.removeExtensions();
 			done();
 		});
 
@@ -320,7 +292,7 @@ describe("mummy", function () {
 		});
 
 		after(function (done) {
-			removeExtension();
+			utilities.removeExtensions();
 			done();
 		});
 
@@ -352,7 +324,7 @@ describe("mummy", function () {
 		});
 
 		after(function (done) {
-			removeExtension();
+			utilities.removeExtensions();
 			done();
 		});
 
@@ -371,7 +343,7 @@ describe("mummy", function () {
 		});
 
 		after(function (done) {
-			removeExtension();
+			utilities.removeExtensions();
 			done();
 		});
 
