@@ -1,6 +1,6 @@
 {
   "name": "mummy",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "Hapi request mocking with Zombie.js and Nipple.",
   "main": "lib/mummy",
   "scripts": {
