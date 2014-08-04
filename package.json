@@ -1,7 +1,7 @@
 {
   "name": "mummy",
   "version": "0.4.0",
-  "description": "Hapi request mocking for ZombieJS",
+  "description": "Hapi request mocking with Zombie.js and Nipple.",
   "main": "lib/mummy",
   "scripts": {
     "coverage": "gulp coverage && xdg-open coverage.html || open coverage.html",
@@ -15,7 +15,8 @@
     "zombie",
     "test",
     "testing",
-    "hapi"
+    "hapi",
+    "nipple"
   ],
   "author": "Jeff Jagoda <jeffrey.jagoda@gmail.com>",
   "license": "MIT",
