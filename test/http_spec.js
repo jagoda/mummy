@@ -126,6 +126,57 @@ describe("The HTTP API extension", function () {
 		});
 	});
 
+	describe("on an authenticated browser", function () {
+		var response;
+
+		before(function (done) {
+			var browser = new Browser();
+			var server  = new Hapi.Server();
+
+			server.route({
+				method : "GET",
+				path   : "/",
+
+				handler : function (request, reply) {
+					reply(request.headers);
+				}
+			});
+
+			nock.disableNetConnect();
+
+			browser = mummy.embalm(server, browser);
+			browser.authenticate().basic("user", "pass");
+			browser.http({})
+			.then(function (_response_) {
+				response = _response_;
+			})
+			.nodeify(done);
+		});
+
+		after(function (done) {
+			nock.enableNetConnect();
+			done();
+		});
+
+		it("includes an 'Authorization' header on the request", function (done) {
+			expect(response.result, "header").to.have.property("authorization");
+			done();
+		});
+
+		it("includes an authorization scheme", function (done) {
+			expect(response.result.authorization.split(" ")[0], "scheme").to.equal("Basic");
+			done();
+		});
+
+		it("includes the credentials with requests", function (done) {
+			var decoded = response.result.authorization.split(" ")[1];
+
+			decoded = (new Buffer(decoded, "base64")).toString("utf8");
+			expect(decoded, "payload").to.equal("user:pass");
+			done();
+		});
+	});
+
 	describe("simulating pack start-up", function () {
 		var loaded;
 		var request;
