@@ -28,14 +28,13 @@ describe("mummy", function () {
 	});
 
 	describe("wrapping a Hapi server", function () {
+		var browser;
 		var localText;
 		var remoteRequest;
 		var remoteText;
 		var server;
 
 		before(function (done) {
-			var browser;
-
 			server = new Hapi.Server();
 
 			server.route({
@@ -76,6 +75,11 @@ describe("mummy", function () {
 		it("does not inject remote requests", function (done) {
 			expect(remoteRequest.isDone(), "no remote request").to.be.true;
 			expect(remoteText, "wrong body").to.equal("boo!");
+			done();
+		});
+
+		it("exposes the pack on the browser object", function (done) {
+			expect(browser, "pack").to.have.property("pack", server.pack);
 			done();
 		});
 	});
