@@ -466,4 +466,63 @@ describe("mummy", function () {
 			.nodeify(done);
 		});
 	});
+
+	describe("user credentials", function () {
+		describe("when set", function () {
+			var credentials = { id : "test" };
+			var browser;
+			var server;
+			var inject;
+
+			before(function (done) {
+				server = new Hapi.Server();
+
+				browser = new Browser();
+				mummy.embalm(server, browser);
+
+				inject = sinon.stub(server, "inject");
+
+				browser.credentials.set(credentials);
+
+				done();
+			});
+
+			after(function (done) {
+				inject.restore();
+				done();
+			});
+
+			describe("a request sent to Hapi", function () {
+
+				before(function (done) {
+					browser.visit("/").nodeify(done);
+				});
+
+				it("puts the credentials in the request", function (done) {
+					var credentialsMatcher = sinon.match.has("credentials", credentials);
+					expect(inject.getCall(0).calledWith(credentialsMatcher, sinon.match.func)).to.be.true;
+					done();
+				});
+			});
+
+			describe("after cleared", function () {
+				before(function (done) {
+					browser.credentials.clear();
+					done();
+				});
+
+				describe("a request sent to Hapi", function () {
+					before(function (done) {
+						browser.visit("/").nodeify(done);
+					});
+
+					it("does not put the credentials in the request", function (done) {
+						var credentialsMatcher = sinon.match.has("credentials", credentials);
+						expect(inject.getCall(1).calledWith(credentialsMatcher, sinon.match.func)).to.be.false;
+						done();
+					});
+				});
+			});
+		});
+	});
 });
