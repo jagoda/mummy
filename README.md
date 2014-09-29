@@ -114,6 +114,19 @@ requests to the pack.
 
 Creates and loads a `Browser` extension for the `pack` defined by the manifest.
 
+### browser.credentials.set(credentials)
+
+ + **credentials** -- an object containing simulated authentication information
+
+Update the browser state to bypass the normal authentication strategies when
+requests are sent to Hapi. See [the Hapi documentation][hapi-inject] for more
+details.
+
+### browser.credentials.clear()
+
+Clear any browser credentials. This will cause normal authentication flows to
+be used for requests sent to Hapi.
+
 ### browser.http(options, [callback])
 
  + **options** -- an object representing the request.
