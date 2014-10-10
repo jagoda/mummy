@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/jagoda/mummy",
   "devDependencies": {
+    "hapi": "^7.0.0",
     "gulp": "^3.8.6",
     "gulp-jshint": "^1.8.0",
     "gulp-lab": "0.0.10",
@@ -35,12 +36,12 @@
     "zombie": "^2.0.0-alpha31"
   },
   "dependencies": {
-    "hapi": "^6.2.1",
     "lodash": "^2.4.1",
     "nipple": "^2.5.4",
     "q": "^1.0.1"
   },
   "peerDependencies": {
+    "hapi": "^7.0.0",
     "zombie": "^2.0.0-alpha31"
   }
 }

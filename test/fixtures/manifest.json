@@ -3,6 +3,9 @@
 		"./test" : {}
 	},
 	"servers" : [
-		{ "port" : "$env.PORT" }
+		{
+			"host" : "$env.HOST",
+			"port" : "$env.PORT"
+		}
 	]
 }
