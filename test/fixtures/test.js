@@ -7,7 +7,7 @@ exports.register = function (plugin, options, done) {
 		path   : "/",
 
 		handler : function (request, reply) {
-			reply("test plugin");
+			reply("test plugin -- " + plugin.servers[0].info.host + " -- " + options.env);
 		}
 	});
 

@@ -1,6 +1,10 @@
 {
 	"plugins" : {
-		"./test" : {}
+		"./test" : {
+			"env"  : "$env.VALUE",
+			"foo"  : "bar",
+			"null" : null
+		}
 	},
 	"servers" : [
 		{

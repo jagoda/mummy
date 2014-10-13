@@ -25,10 +25,11 @@
   },
   "homepage": "https://github.com/jagoda/mummy",
   "devDependencies": {
-    "hapi": "^7.0.0",
+    "apparition": "^0.1.1",
     "gulp": "^3.8.6",
     "gulp-jshint": "^1.8.0",
     "gulp-lab": "0.0.10",
+    "hapi": "^7.0.0",
     "jshint-stylish": "^0.4.0",
     "lab": "^3.2.1",
     "nock": "^0.42.2",

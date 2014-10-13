@@ -1,13 +1,14 @@
 "use strict";
-var Browser   = require("zombie");
-var Hapi      = require("hapi");
-var nock      = require("nock");
-var Lab       = require("lab");
-var mummy     = require("..");
-var path      = require("path");
-var Q         = require("q");
-var sinon     = require("sinon");
-var utilities = require("./helpers/utilities");
+var Browser     = require("zombie");
+var Environment = require("apparition").Environment;
+var Hapi        = require("hapi");
+var nock        = require("nock");
+var Lab         = require("lab");
+var mummy       = require("..");
+var path        = require("path");
+var Q           = require("q");
+var sinon       = require("sinon");
+var utilities   = require("./helpers/utilities");
 
 var after    = Lab.after;
 var before   = Lab.before;
@@ -194,17 +195,21 @@ describe("mummy", function () {
 		});
 
 		it("injects requests into the pack servers", function (done) {
-			expect(response, "response").to.equal("test plugin");
+			expect(response, "response").to.contain("test plugin");
 			done();
 		});
 	});
 
 	describe("composing a pack from a manifest path and plugin directory", function () {
+		var environment;
 		var response;
 
 		before(function (done) {
 			var manifest = path.join(__dirname, "fixtures", "manifest.json");
 			var plugins  = path.join(__dirname, "fixtures");
+
+			environment = new Environment();
+			environment.set("value", "environment value");
 
 			Q.ninvoke(mummy, "compose", manifest, plugins)
 			.then(function (browser) {
@@ -219,17 +224,32 @@ describe("mummy", function () {
 			.nodeify(done);
 		});
 
+		after(function (done) {
+			environment.restore();
+			done();
+		});
+
 		it("injects requests into the pack servers", function (done) {
-			expect(response, "response").to.equal("test plugin");
+			expect(response, "response").to.contain("test plugin");
+			expect(response, "host").to.contain("0.0.0.0");
+			done();
+		});
+
+		it("interpolates environment variables", function (done) {
+			expect(response, "value").to.contain("environment value");
 			done();
 		});
 	});
 
 	describe("composing a pack from a manifest path", function () {
+		var environment;
 		var response;
 
 		before(function (done) {
 			var manifest = path.join(__dirname, "fixtures", "manifest.json");
+
+			environment = new Environment();
+			environment.set("value", "environment value");
 
 			Q.ninvoke(mummy, "compose", manifest)
 			.then(function (browser) {
@@ -244,8 +264,19 @@ describe("mummy", function () {
 			.nodeify(done);
 		});
 
+		after(function (done) {
+			environment.restore();
+			done();
+		});
+
 		it("injects requests into the pack servers", function (done) {
-			expect(response, "response").to.equal("test plugin");
+			expect(response, "response").to.contain("test plugin");
+			expect(response, "host").to.contain("0.0.0.0");
+			done();
+		});
+
+		it("interpolates environment variables", function (done) {
+			expect(response, "value").to.contain("environment value");
 			done();
 		});
 	});
@@ -301,7 +332,8 @@ describe("mummy", function () {
 		});
 
 		it("injects requests from all browsers into the pack", function (done) {
-			expect(response, "wrong response").to.equal("test plugin");
+			expect(response, "wrong response").to.contain("test plugin");
+			expect(response, "host").to.contain("0.0.0.0");
 			done();
 		});
 	});
@@ -333,7 +365,7 @@ describe("mummy", function () {
 		});
 
 		it("injects requests from all browsers into the pack", function (done) {
-			expect(response, "wrong response").to.equal("test plugin");
+			expect(response, "wrong response").to.contain("test plugin");
 			done();
 		});
 	});
