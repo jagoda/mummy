@@ -177,6 +177,78 @@ describe("The HTTP API extension", function () {
 		});
 	});
 
+	describe("with custom credentials", function () {
+		var credentials = { id : "test" };
+
+		var browser;
+
+		before(function (done) {
+			var server  = new Hapi.Server();
+
+			server.route({
+				method : "GET",
+				path   : "/",
+
+				handler : function (request, reply) {
+					reply(request.auth.credentials);
+				}
+			});
+
+			browser = new Browser();
+			mummy.embalm(server, browser);
+
+			browser.credentials.set(credentials);
+			done();
+		});
+
+		describe("performing a request", function () {
+			var result;
+
+			before(function (done) {
+				browser.http({
+					method : "GET",
+					url    : "/"
+				})
+				.then(function (response) {
+					result = JSON.parse(response.payload);
+				})
+				.nodeify(done);
+			});
+
+			it("puts the credentials in the request", function (done) {
+				expect(result, "credentials").to.deep.equal(credentials);
+				done();
+			});
+
+			describe("then clearing the credentials", function () {
+				before(function (done) {
+					browser.credentials.clear();
+					done();
+				});
+
+				describe("and performing a request", function () {
+					var result;
+
+					before(function (done) {
+						browser.http({
+							method : "GET",
+							path   : "/"
+						})
+						.then(function (response) {
+							result = response.payload;
+						})
+						.nodeify(done);
+					});
+
+					it("does not put the credentials in the request", function (done) {
+						expect(result, "credentials").to.equal("");
+						done();
+					});
+				});
+			});
+		});
+	});
+
 	describe("simulating pack start-up", function () {
 		var loaded;
 		var request;
