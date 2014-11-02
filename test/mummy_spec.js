@@ -2,13 +2,13 @@
 var Browser     = require("zombie");
 var Environment = require("apparition").Environment;
 var Hapi        = require("hapi");
-var nock        = require("nock");
+var Nock        = require("nock");
 var Lab         = require("lab");
-var mummy       = require("..");
-var path        = require("path");
+var Mummy       = require("..");
+var Path        = require("path");
 var Q           = require("q");
-var sinon       = require("sinon");
-var utilities   = require("./helpers/utilities");
+var Sinon       = require("sinon");
+var Utilities   = require("./helpers/utilities");
 
 var after    = Lab.after;
 var before   = Lab.before;
@@ -19,12 +19,12 @@ var it       = Lab.it;
 describe("mummy", function () {
 
 	before(function (done) {
-		nock.disableNetConnect();
+		Nock.disableNetConnect();
 		done();
 	});
 
 	after(function (done) {
-		nock.enableNetConnect();
+		Nock.enableNetConnect();
 		done();
 	});
 
@@ -42,15 +42,15 @@ describe("mummy", function () {
 				method : "GET",
 				path   : "/",
 
-				handler : { file : path.join(__dirname, "fixtures", "test.html") }
+				handler : { file : Path.join(__dirname, "fixtures", "test.html") }
 			});
 
-			remoteRequest = nock("http://example.com")
+			remoteRequest = new Nock("http://example.com")
 			.get("/")
 			.reply(200, "boo!");
 
 			browser = new Browser();
-			mummy.embalm(server, browser);
+			Mummy.embalm(server, browser);
 
 			browser.visit("/")
 			.then(function () {
@@ -64,7 +64,7 @@ describe("mummy", function () {
 		});
 
 		after(function (done) {
-			nock.cleanAll();
+			Nock.cleanAll();
 			done();
 		});
 
@@ -90,16 +90,16 @@ describe("mummy", function () {
 		var server;
 
 		before(function (done) {
-			embalm = sinon.stub(mummy, "embalm");
+			embalm = Sinon.stub(Mummy, "embalm");
 			server = new Hapi.Server();
 
-			Browser.extend(mummy(server));
+			Browser.extend(new Mummy(server));
 			done();
 		});
 
 		after(function (done) {
 			embalm.restore();
-			utilities.removeExtensions();
+			Utilities.removeExtensions();
 			done();
 		});
 
@@ -120,10 +120,10 @@ describe("mummy", function () {
 		var anonymousText2;
 
 		before(function (done) {
-			var pack = utilities.createPack();
+			var pack = Utilities.createPack();
 			var browser;
 
-			Browser.extend(mummy(pack));
+			Browser.extend(new Mummy(pack));
 			browser = new Browser();
 
 			browser.visit("/")
@@ -150,7 +150,7 @@ describe("mummy", function () {
 		});
 
 		after(function (done) {
-			utilities.removeExtensions();
+			Utilities.removeExtensions();
 			done();
 		});
 
@@ -181,7 +181,7 @@ describe("mummy", function () {
 				]
 			};
 
-			Q.ninvoke(mummy, "compose", manifest, path.join(__dirname, "fixtures"))
+			Q.ninvoke(Mummy, "compose", manifest, Path.join(__dirname, "fixtures"))
 			.then(function (browser) {
 				return browser.visit("/")
 				.then(function () {
@@ -205,13 +205,13 @@ describe("mummy", function () {
 		var response;
 
 		before(function (done) {
-			var manifest = path.join(__dirname, "fixtures", "manifest.json");
-			var plugins  = path.join(__dirname, "fixtures");
+			var manifest = Path.join(__dirname, "fixtures", "manifest.json");
+			var plugins  = Path.join(__dirname, "fixtures");
 
 			environment = new Environment();
 			environment.set("value", "environment value");
 
-			Q.ninvoke(mummy, "compose", manifest, plugins)
+			Q.ninvoke(Mummy, "compose", manifest, plugins)
 			.then(function (browser) {
 				return browser.visit("/")
 				.then(function () {
@@ -246,12 +246,12 @@ describe("mummy", function () {
 		var response;
 
 		before(function (done) {
-			var manifest = path.join(__dirname, "fixtures", "manifest.json");
+			var manifest = Path.join(__dirname, "fixtures", "manifest.json");
 
 			environment = new Environment();
 			environment.set("value", "environment value");
 
-			Q.ninvoke(mummy, "compose", manifest)
+			Q.ninvoke(Mummy, "compose", manifest)
 			.then(function (browser) {
 				return browser.visit("/")
 				.then(function () {
@@ -285,7 +285,7 @@ describe("mummy", function () {
 		var result;
 
 		before(function (done) {
-			result = mummy.compose(path.join(__dirname, "fixtures", "manifest.json"));
+			result = Mummy.compose(Path.join(__dirname, "fixtures", "manifest.json"));
 			done();
 		});
 
@@ -311,7 +311,7 @@ describe("mummy", function () {
 				]
 			};
 
-			Q.ninvoke(mummy, "extend", manifest, path.join(__dirname, "fixtures"))
+			Q.ninvoke(Mummy, "extend", manifest, Path.join(__dirname, "fixtures"))
 			.then(function () {
 				var browser = new Browser();
 
@@ -327,7 +327,7 @@ describe("mummy", function () {
 		});
 
 		after(function (done) {
-			utilities.removeExtensions();
+			Utilities.removeExtensions();
 			done();
 		});
 
@@ -342,9 +342,9 @@ describe("mummy", function () {
 		var response;
 
 		before(function (done) {
-			var manifest = path.join(__dirname, "fixtures", "manifest.json");
+			var manifest = Path.join(__dirname, "fixtures", "manifest.json");
 
-			Q.ninvoke(mummy, "extend", manifest)
+			Q.ninvoke(Mummy, "extend", manifest)
 			.then(function () {
 				var browser = new Browser();
 
@@ -360,7 +360,7 @@ describe("mummy", function () {
 		});
 
 		after(function (done) {
-			utilities.removeExtensions();
+			Utilities.removeExtensions();
 			done();
 		});
 
@@ -374,12 +374,12 @@ describe("mummy", function () {
 		var result;
 
 		before(function (done) {
-			result = mummy.extend(path.join(__dirname, "fixtures", "manifest.json"));
+			result = Mummy.extend(Path.join(__dirname, "fixtures", "manifest.json"));
 			done();
 		});
 
 		after(function (done) {
-			utilities.removeExtensions();
+			Utilities.removeExtensions();
 			done();
 		});
 
@@ -415,7 +415,7 @@ describe("mummy", function () {
 			};
 
 			pack = new Hapi.Pack();
-			spy  = sinon.spy();
+			spy  = Sinon.spy();
 
 			pack.server();
 			pack.register([ dependency, plugin ], done);
@@ -424,7 +424,7 @@ describe("mummy", function () {
 		it("simulates server start-up on first visit", function (done) {
 			var browser = new Browser();
 
-			mummy.embalm(pack, browser);
+			Mummy.embalm(pack, browser);
 			expect(spy.called, "spy called before start").to.be.false;
 
 			browser.visit("/", function () {
@@ -437,8 +437,8 @@ describe("mummy", function () {
 			var browser1 = new Browser();
 			var browser2 = new Browser();
 
-			mummy.embalm(pack, browser1);
-			mummy.embalm(pack, browser2);
+			Mummy.embalm(pack, browser1);
+			Mummy.embalm(pack, browser2);
 
 			Q.all([ browser1.visit("/"), browser2.visit("/"), browser2.visit("/") ])
 			.fail(function () { /* ignore errors */ })
@@ -457,7 +457,7 @@ describe("mummy", function () {
 			var plugin;
 
 			pack = new Hapi.Pack();
-			spy  = sinon.spy();
+			spy  = Sinon.spy();
 
 			plugin = {
 				name     : "test plugin",
@@ -474,7 +474,7 @@ describe("mummy", function () {
 		it("simulates server start-up on first visit", function (done) {
 			var browser = new Browser();
 
-			mummy.embalm(pack, browser);
+			Mummy.embalm(pack, browser);
 			expect(spy.called, "spy called before start").to.be.false;
 
 			browser.visit("/", function () {
@@ -487,8 +487,8 @@ describe("mummy", function () {
 			var browser1 = new Browser();
 			var browser2 = new Browser();
 
-			mummy.embalm(pack, browser1);
-			mummy.embalm(pack, browser2);
+			Mummy.embalm(pack, browser1);
+			Mummy.embalm(pack, browser2);
 
 			Q.all([ browser1.visit("/"), browser2.visit("/"), browser2.visit("/") ])
 			.fail(function () { /* ignore errors */ })
@@ -509,9 +509,9 @@ describe("mummy", function () {
 			server = new Hapi.Server();
 
 			browser = new Browser();
-			mummy.embalm(server, browser);
+			Mummy.embalm(server, browser);
 
-			inject = sinon.stub(server, "inject");
+			inject = Sinon.stub(server, "inject");
 
 			browser.credentials.set(credentials);
 
@@ -530,8 +530,8 @@ describe("mummy", function () {
 			});
 
 			it("puts the credentials in the request", function (done) {
-				var credentialsMatcher = sinon.match.has("credentials", credentials);
-				expect(inject.getCall(0).calledWith(credentialsMatcher, sinon.match.func)).to.be.true;
+				var credentialsMatcher = Sinon.match.has("credentials", credentials);
+				expect(inject.getCall(0).calledWith(credentialsMatcher, Sinon.match.func)).to.be.true;
 				done();
 			});
 		});
@@ -548,8 +548,8 @@ describe("mummy", function () {
 				});
 
 				it("does not put the credentials in the request", function (done) {
-					var credentialsMatcher = sinon.match.has("credentials", credentials);
-					expect(inject.getCall(1).calledWith(credentialsMatcher, sinon.match.func)).to.be.false;
+					var credentialsMatcher = Sinon.match.has("credentials", credentials);
+					expect(inject.getCall(1).calledWith(credentialsMatcher, Sinon.match.func)).to.be.false;
 					done();
 				});
 			});

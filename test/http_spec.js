@@ -2,11 +2,11 @@
 var Browser   = require("zombie");
 var Hapi      = require("hapi");
 var Lab       = require("lab");
-var mummy     = require("..");
-var nock      = require("nock");
+var Mummy     = require("..");
+var Nock      = require("nock");
 var Q         = require("q");
-var sinon     = require("sinon");
-var utilities = require("./helpers/utilities");
+var Sinon     = require("sinon");
+var Utilities = require("./helpers/utilities");
 
 var after    = Lab.after;
 var before   = Lab.before;
@@ -20,18 +20,18 @@ describe("The HTTP API extension", function () {
 		var browser;
 
 		before(function (done) {
-			var pack = utilities.createPack();
+			var pack = Utilities.createPack();
 
-			nock.disableNetConnect();
+			Nock.disableNetConnect();
 
-			Browser.extend(mummy(pack));
+			Browser.extend(new Mummy(pack));
 			browser = new Browser();
 			done();
 		});
 
 		after(function (done) {
-			utilities.removeExtensions();
-			nock.enableNetConnect();
+			Utilities.removeExtensions();
+			Nock.enableNetConnect();
 			done();
 		});
 
@@ -81,7 +81,7 @@ describe("The HTTP API extension", function () {
 		});
 
 		it("does not inject remote requests", function (done) {
-			var request = nock("http://google.com").get("/").reply(200, "google");
+			var request = new Nock("http://google.com").get("/").reply(200, "google");
 
 			browser.http({ method : "GET", url : "http://google.com" })
 			.then(function (response) {
@@ -90,13 +90,13 @@ describe("The HTTP API extension", function () {
 				expect(response.payload, "payload").to.equal("google");
 			})
 			.fin(function () {
-				nock.cleanAll();
+				Nock.cleanAll();
 			})
 			.nodeify(done);
 		});
 
 		it("defaults to the GET method", function (done) {
-			var request = nock("http://google.com").get("/").reply(200, "google");
+			var request = new Nock("http://google.com").get("/").reply(200, "google");
 
 			Q.all([
 				browser.http({ url : "/" }),
@@ -111,7 +111,7 @@ describe("The HTTP API extension", function () {
 				expect(remote.payload, "remote payload").to.equal("google");
 			})
 			.fin(function () {
-				nock.cleanAll();
+				Nock.cleanAll();
 			})
 			.nodeify(done);
 		});
@@ -142,9 +142,9 @@ describe("The HTTP API extension", function () {
 				}
 			});
 
-			nock.disableNetConnect();
+			Nock.disableNetConnect();
 
-			browser = mummy.embalm(server, browser);
+			browser = Mummy.embalm(server, browser);
 			browser.authenticate().basic("user", "pass");
 			browser.http({})
 			.then(function (_response_) {
@@ -154,7 +154,7 @@ describe("The HTTP API extension", function () {
 		});
 
 		after(function (done) {
-			nock.enableNetConnect();
+			Nock.enableNetConnect();
 			done();
 		});
 
@@ -195,7 +195,7 @@ describe("The HTTP API extension", function () {
 			});
 
 			browser = new Browser();
-			mummy.embalm(server, browser);
+			Mummy.embalm(server, browser);
 
 			browser.credentials.set(credentials);
 			done();
@@ -260,10 +260,10 @@ describe("The HTTP API extension", function () {
 
 			// Anonymous functions cause function names to be used for test
 			// output.
-			loaded  = sinon.spy(function loaded () {});
-			request = sinon.spy(function request () {});
-			started = sinon.spy(function started () {});
-			browser = mummy.embalm(server, new Browser());
+			loaded  = Sinon.spy(function loaded () {});
+			request = Sinon.spy(function request () {});
+			started = Sinon.spy(function started () {});
+			browser = Mummy.embalm(server, new Browser());
 
 			server.pack.events.once("start", started);
 
@@ -299,7 +299,7 @@ describe("The HTTP API extension", function () {
 		});
 
 		it("starts the pack before processing requests", function (done) {
-			sinon.assert.callOrder(loaded, started, request);
+			Sinon.assert.callOrder(loaded, started, request);
 			done();
 		});
 	});

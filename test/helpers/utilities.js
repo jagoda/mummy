@@ -1,8 +1,8 @@
 "use strict";
 var Browser = require("zombie");
-var fs      = require("fs");
+var FS      = require("fs");
 var Hapi    = require("hapi");
-var path    = require("path");
+var Path    = require("path");
 var _       = require("lodash");
 
 module.exports = {
@@ -15,12 +15,11 @@ module.exports = {
 		pack.server();               // http://localhost:80
 		pack.server({                // https://localhost:443
 			tls : {
-				cert : fs.readFileSync(path.join(__dirname, "..", "fixtures", "cert.pem")),
-				key  : fs.readFileSync(path.join(__dirname, "..", "fixtures", "key.pem"))
+				cert : FS.readFileSync(Path.join(__dirname, "..", "fixtures", "cert.pem")),
+				key  : FS.readFileSync(Path.join(__dirname, "..", "fixtures", "key.pem"))
 			}
 		});
 
-		// FIXME: depending on `_servers` is a little hackish...
 		_.each(pack.connections, function (server, index) {
 			server.route({
 				method : "GET",
