@@ -21,7 +21,7 @@ module.exports = {
 		});
 
 		// FIXME: depending on `_servers` is a little hackish...
-		_.each(pack._servers, function (server, index) {
+		_.each(pack.connections, function (server, index) {
 			server.route({
 				method : "GET",
 				path   : "/",

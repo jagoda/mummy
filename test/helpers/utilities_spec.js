@@ -15,7 +15,7 @@ describe("The helper utilities", function () {
 		var pack = utilities.createPack();
 
 		expect(pack, "wrong type").to.be.an.instanceOf(Hapi.Pack);
-		expect(pack._servers, "incorrect number of servers").to.have.length(4);
+		expect(pack.connections, "incorrect number of servers").to.have.length(4);
 		done();
 	});
 

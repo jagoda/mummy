@@ -44,7 +44,7 @@ gulp.task("lint-test", function () {
 gulp.task("test", [ "lint" ], function () {
 	return gulp.src(TEST_FILES)
 	.pipe(lab({
-		args : "-v -p -t 100",
+		args : "-v -t 100",
 		opts : {
 			emitLabError : true
 		}
