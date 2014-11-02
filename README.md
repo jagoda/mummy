@@ -3,7 +3,7 @@ mummy
 
 [![Build Status](https://travis-ci.org/jagoda/mummy.svg?branch=master)](https://travis-ci.org/jagoda/mummy)
 
-> [Hapi][hapi] request mocking with [Zombie.js][zombie] and [Nipple][nipple].
+> [Hapi][hapi] request mocking with [Zombie.js][zombie] and [Wreck][wreck].
 
 	npm install mummy
 
@@ -141,12 +141,12 @@ The options hash can include the following:
  + **headers** -- an object defining request headers.
 
 Performs a "raw" HTTP request. The [server.inject()][hapi-inject] method from
-`Hapi` is used for requests to wrapped servers while [Nipple][nipple] is used
+`Hapi` is used for requests to wrapped servers while [Wreck][wreck] is used
 for requests to URLs not belonging to wrapped servers. Additional options are
 supported for both (see the respective docs for details).
 
 [hapi]: https://github.com/spumko/hapi "Hapi"
 [hapi-inject]: https://github.com/hapijs/hapi/blob/master/docs/Reference.md#serverinjectoptions-callback "server.inject()"
-[nipple]: https://github.com/hapijs/nipple "Nipple"
+[wreck]: https://github.com/hapijs/wreck "Wreck"
 [zombie]: https://github.com/assaf/zombie "Zombie.js"
 [zombie-ext]: https://github.com/assaf/zombie/tree/master/doc/new#extending-the-browser "Zombie Extensions"
