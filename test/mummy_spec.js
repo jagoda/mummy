@@ -501,6 +501,7 @@ describe("mummy", function () {
 
 	describe("with user credentials", function () {
 		var credentials = { id : "test" };
+
 		var browser;
 		var server;
 		var inject;
@@ -553,6 +554,63 @@ describe("mummy", function () {
 					done();
 				});
 			});
+		});
+	});
+
+	describe("with cookies", function () {
+		var browser;
+		var server;
+		var inject;
+
+		before(function (done) {
+			server  = new Hapi.Server();
+			browser = Mummy.embalm(server, new Browser());
+			inject  = Sinon.stub(server, "inject");
+
+			browser.setCookie({
+				name   : "matching",
+				domain : "localhost",
+				path   : "/"
+			});
+
+			browser.setCookie({
+				name   : "domain",
+				domain : "example.com",
+				path   : "/"
+			});
+
+			browser.setCookie({
+				name   : "path",
+				domain : "localhost",
+				path   : "/path"
+			});
+
+			browser.visit("/").nodeify(done);
+		});
+
+		after(function (done) {
+			inject.restore();
+			done();
+		});
+
+		it("injects a cookie header", function (done) {
+			expect(inject.firstCall.args[0].headers, "header").to.have.property("cookie");
+			done();
+		});
+
+		it("injects the matching cookies", function (done) {
+			var cookies = inject.firstCall.args[0].headers.cookie;
+
+			expect(cookies, "matching cookie").to.include("matching=");
+			done();
+		});
+
+		it("does not inject cookies headers that do not match the request", function (done) {
+			var cookies = inject.firstCall.args[0].headers.cookie;
+
+			expect(cookies, "domain cookie").to.not.include("domain=");
+			expect(cookies, "path cookie").to.not.include("path=");
+			done();
 		});
 	});
 });
