@@ -8,19 +8,26 @@ var _       = require("lodash");
 module.exports = {
 
 	createPack : function () {
-		var pack    = new Hapi.Pack();
+		var server    = new Hapi.Server();
 
-		pack.server("example.com");  // http://example.com:80
-		pack.server(42);             // http://localhost:42
-		pack.server();               // http://localhost:80
-		pack.server({                // https://localhost:443
-			tls : {
-				cert : FS.readFileSync(Path.join(__dirname, "..", "fixtures", "cert.pem")),
-				key  : FS.readFileSync(Path.join(__dirname, "..", "fixtures", "key.pem"))
-			}
-		});
+		var connections = [
+			// http://example.com:80
+			server.connection({ host : "example.com" }),
+			// http://localhost:42
+			server.connection({ port : 42 }),
+			// http://localhost:80
+			server.connection(),
 
-		_.each(pack.connections, function (server, index) {
+			// https://localhost:443
+			server.connection({
+				tls : {
+					cert : FS.readFileSync(Path.join(__dirname, "..", "fixtures", "cert.pem")),
+					key  : FS.readFileSync(Path.join(__dirname, "..", "fixtures", "key.pem"))
+				}
+			})
+		];
+
+		_.each(connections, function (server, index) {
 			server.route({
 				method : "GET",
 				path   : "/",
@@ -31,7 +38,7 @@ module.exports = {
 			});
 		});
 
-		return pack;
+		return server;
 	},
 
 	removeExtensions: function () {

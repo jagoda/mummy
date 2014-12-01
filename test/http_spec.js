@@ -133,6 +133,8 @@ describe("The HTTP API extension", function () {
 			var browser = new Browser();
 			var server  = new Hapi.Server();
 
+			server.connection();
+
 			server.route({
 				method : "GET",
 				path   : "/",
@@ -184,6 +186,8 @@ describe("The HTTP API extension", function () {
 
 		before(function (done) {
 			var server  = new Hapi.Server();
+
+			server.connection();
 
 			server.route({
 				method : "GET",
@@ -258,6 +262,28 @@ describe("The HTTP API extension", function () {
 			var server = new Hapi.Server();
 			var browser;
 
+			var plugin1 = function (plugin, options, done) {
+				done();
+			};
+
+			var plugin2 = function (plugin, options, done) {
+				plugin.dependency("plugin1", function (plugin, done) {
+					loaded();
+					done();
+				});
+				done();
+			};
+
+			plugin1.attributes = {
+				name : "plugin1"
+			};
+
+			plugin2.attributes = {
+				name : "plugin2"
+			};
+
+			server.connection();
+
 			// Anonymous functions cause function names to be used for test
 			// output.
 			loaded  = Sinon.spy(function loaded () {});
@@ -265,24 +291,14 @@ describe("The HTTP API extension", function () {
 			started = Sinon.spy(function started () {});
 			browser = Mummy.embalm(server, new Browser());
 
-			server.pack.events.once("start", started);
+			server.once("start", started);
 
-			Q.ninvoke(server.pack, "register", [
+			Q.ninvoke(server, "register", [
 				{
-					name     : "plugin1",
-					register : function (plugin, options, done) {
-						done();
-					}
+					register : plugin1
 				},
 				{
-					name     : "plugin2",
-					register : function (plugin, options, done) {
-						plugin.dependency("plugin1", function (plugin, done) {
-							loaded();
-							done();
-						});
-						done();
-					}
+					register : plugin2
 				}
 			])
 			.then(function () {

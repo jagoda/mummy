@@ -1,6 +1,5 @@
 "use strict";
 var Browser     = require("zombie");
-var Environment = require("apparition").Environment;
 var Hapi        = require("hapi");
 var Nock        = require("nock");
 var Lab         = require("lab");
@@ -37,6 +36,8 @@ describe("mummy", function () {
 
 		before(function (done) {
 			server = new Hapi.Server();
+
+			server.connection();
 
 			server.route({
 				method : "GET",
@@ -168,313 +169,29 @@ describe("mummy", function () {
 		});
 	});
 
-	describe("composing a pack from a manifest object", function () {
-		var response;
-
-		before(function (done) {
-			var manifest = {
-				plugins : {
-					"./test" : {}
-				},
-				servers : [
-					{ port : "$env.PORT" }
-				]
-			};
-
-			Q.ninvoke(Mummy, "compose", manifest, Path.join(__dirname, "fixtures"))
-			.then(function (browser) {
-				return browser.visit("/")
-				.then(function () {
-					return browser;
-				});
-			})
-			.then(function (browser) {
-				response = browser.text("body");
-			})
-			.nodeify(done);
-		});
-
-		it("injects requests into the pack servers", function (done) {
-			expect(response, "response").to.contain("test plugin");
-			done();
-		});
-	});
-
-	describe("composing a pack from a manifest path and plugin directory", function () {
-		var environment;
-		var response;
-
-		before(function (done) {
-			var manifest = Path.join(__dirname, "fixtures", "manifest.json");
-			var plugins  = Path.join(__dirname, "fixtures");
-
-			environment = new Environment();
-			environment.set("value", "environment value");
-
-			Q.ninvoke(Mummy, "compose", manifest, plugins)
-			.then(function (browser) {
-				return browser.visit("/")
-				.then(function () {
-					return browser;
-				});
-			})
-			.then(function (browser) {
-				response = browser.text("body");
-			})
-			.nodeify(done);
-		});
-
-		after(function (done) {
-			environment.restore();
-			done();
-		});
-
-		it("injects requests into the pack servers", function (done) {
-			expect(response, "response").to.contain("test plugin");
-			expect(response, "host").to.contain("0.0.0.0");
-			done();
-		});
-
-		it("interpolates environment variables", function (done) {
-			expect(response, "value").to.contain("environment value");
-			done();
-		});
-	});
-
-	describe("composing a pack from a manifest path", function () {
-		var environment;
-		var response;
-
-		before(function (done) {
-			var manifest = Path.join(__dirname, "fixtures", "manifest.json");
-
-			environment = new Environment();
-			environment.set("value", "environment value");
-
-			Q.ninvoke(Mummy, "compose", manifest)
-			.then(function (browser) {
-				return browser.visit("/")
-				.then(function () {
-					return browser;
-				});
-			})
-			.then(function (browser) {
-				response = browser.text("body");
-			})
-			.nodeify(done);
-		});
-
-		after(function (done) {
-			environment.restore();
-			done();
-		});
-
-		it("injects requests into the pack servers", function (done) {
-			expect(response, "response").to.contain("test plugin");
-			expect(response, "host").to.contain("0.0.0.0");
-			done();
-		});
-
-		it("interpolates environment variables", function (done) {
-			expect(response, "value").to.contain("environment value");
-			done();
-		});
-	});
-
-	describe("composing a pack without a callback", function () {
-		var result;
-
-		before(function (done) {
-			result = Mummy.compose(Path.join(__dirname, "fixtures", "manifest.json"));
-			done();
-		});
-
-		it("returns a promise for a browser", function (done) {
-			expect(result.then, "not a promise").to.be.a("function");
-			result.then(function (browser) {
-				expect(browser, "not a browser").to.be.an.instanceOf(Browser);
-				done();
-			});
-		});
-	});
-
-	describe("loading a browser extension from a manifest object", function () {
-		var response;
-
-		before(function (done) {
-			var manifest = {
-				plugins : {
-					"./test" : {}
-				},
-				servers : [
-					{ port : "$env.PORT" }
-				]
-			};
-
-			Q.ninvoke(Mummy, "extend", manifest, Path.join(__dirname, "fixtures"))
-			.then(function () {
-				var browser = new Browser();
-
-				return browser.visit("/")
-				.then(function () {
-					return browser;
-				});
-			})
-			.then(function (browser) {
-				response = browser.text("body");
-			})
-			.nodeify(done);
-		});
-
-		after(function (done) {
-			Utilities.removeExtensions();
-			done();
-		});
-
-		it("injects requests from all browsers into the pack", function (done) {
-			expect(response, "wrong response").to.contain("test plugin");
-			expect(response, "host").to.contain("0.0.0.0");
-			done();
-		});
-	});
-
-	describe("loading a browser extension from a manifest file", function () {
-		var response;
-
-		before(function (done) {
-			var manifest = Path.join(__dirname, "fixtures", "manifest.json");
-
-			Q.ninvoke(Mummy, "extend", manifest)
-			.then(function () {
-				var browser = new Browser();
-
-				return browser.visit("/")
-				.then(function () {
-					return browser;
-				});
-			})
-			.then(function (browser) {
-				response = browser.text("body");
-			})
-			.nodeify(done);
-		});
-
-		after(function (done) {
-			Utilities.removeExtensions();
-			done();
-		});
-
-		it("injects requests from all browsers into the pack", function (done) {
-			expect(response, "wrong response").to.contain("test plugin");
-			done();
-		});
-	});
-
-	describe("loading a browser extension from a manifest without a callback", function () {
-		var result;
-
-		before(function (done) {
-			result = Mummy.extend(Path.join(__dirname, "fixtures", "manifest.json"));
-			done();
-		});
-
-		after(function (done) {
-			Utilities.removeExtensions();
-			done();
-		});
-
-		it("returns a promise", function (done) {
-			expect(result.then, "not a promise").to.be.a("function");
-			done();
-		});
-	});
-
-	describe("wrapping a pack with dependencies", function () {
-		var pack;
-		var spy;
-
-		before(function (done) {
-			var dependency = {
-				name     : "test dependency",
-				register : function (plugin, options, done) {
-					done();
-				}
-			};
-
-			var plugin = {
-				name     : "test plugin",
-				register : function (plugin, options, done) {
-
-					plugin.dependency("test dependency", function (plugin, done) {
-						spy();
-						done();
-					});
-
-					done();
-				}
-			};
-
-			pack = new Hapi.Pack();
-			spy  = Sinon.spy();
-
-			pack.server();
-			pack.register([ dependency, plugin ], done);
-		});
-
-		it("simulates server start-up on first visit", function (done) {
-			var browser = new Browser();
-
-			Mummy.embalm(pack, browser);
-			expect(spy.called, "spy called before start").to.be.false;
-
-			browser.visit("/", function () {
-				expect(spy.called, "spy not called after start").to.be.true;
-				done();
-			});
-		});
-
-		it("only starts the pack once", function (done) {
-			var browser1 = new Browser();
-			var browser2 = new Browser();
-
-			Mummy.embalm(pack, browser1);
-			Mummy.embalm(pack, browser2);
-
-			Q.all([ browser1.visit("/"), browser2.visit("/"), browser2.visit("/") ])
-			.fail(function () { /* ignore errors */ })
-			.then(function () {
-				expect(spy.callCount, "multiple starts").to.equal(1);
-			})
-			.nodeify(done);
-		});
-	});
-
 	describe("wrapping a pack that leverages the start-up event", function () {
-		var pack;
+		var server;
 		var spy;
 
 		before(function (done) {
-			var plugin;
-
-			pack = new Hapi.Pack();
-			spy  = Sinon.spy();
-
-			plugin = {
-				name     : "test plugin",
-				register : function (plugin, options, done) {
-					plugin.events.on("start", spy);
-					done();
-				}
+			var plugin = function (plugin, options, done) {
+				plugin.on("start", spy);
+				done();
 			};
 
-			pack.server();
-			pack.register(plugin, done);
+			plugin.attributes = { name : "plugin" };
+
+			server = new Hapi.Server();
+			spy    = Sinon.spy();
+
+			server.connection();
+			server.register({ register : plugin }, done);
 		});
 
 		it("simulates server start-up on first visit", function (done) {
 			var browser = new Browser();
 
-			Mummy.embalm(pack, browser);
+			Mummy.embalm(server, browser);
 			expect(spy.called, "spy called before start").to.be.false;
 
 			browser.visit("/", function () {
@@ -487,8 +204,8 @@ describe("mummy", function () {
 			var browser1 = new Browser();
 			var browser2 = new Browser();
 
-			Mummy.embalm(pack, browser1);
-			Mummy.embalm(pack, browser2);
+			Mummy.embalm(server, browser1);
+			Mummy.embalm(server, browser2);
 
 			Q.all([ browser1.visit("/"), browser2.visit("/"), browser2.visit("/") ])
 			.fail(function () { /* ignore errors */ })
@@ -507,15 +224,14 @@ describe("mummy", function () {
 		var inject;
 
 		before(function (done) {
-			server = new Hapi.Server();
-
 			browser = new Browser();
+			server  = new Hapi.Server();
+
+			server.connection();
+			inject = Sinon.stub(server.connections[0], "inject");
+
 			Mummy.embalm(server, browser);
-
-			inject = Sinon.stub(server, "inject");
-
 			browser.credentials.set(credentials);
-
 			done();
 		});
 
@@ -527,7 +243,7 @@ describe("mummy", function () {
 		describe("performing a request", function () {
 
 			before(function (done) {
-				browser.visit("/").nodeify(done);
+				browser.visit("/").fin(done);
 			});
 
 			it("puts the credentials in the request", function (done) {
@@ -545,7 +261,7 @@ describe("mummy", function () {
 
 			describe("performing a request", function () {
 				before(function (done) {
-					browser.visit("/").nodeify(done);
+					browser.visit("/").fin(done);
 				});
 
 				it("does not put the credentials in the request", function (done) {
@@ -564,8 +280,11 @@ describe("mummy", function () {
 
 		before(function (done) {
 			server  = new Hapi.Server();
+
+			server.connection();
+			inject  = Sinon.stub(server.connections[0], "inject");
+
 			browser = Mummy.embalm(server, new Browser());
-			inject  = Sinon.stub(server, "inject");
 
 			browser.setCookie({
 				name   : "matching",
