@@ -1,6 +1,6 @@
 {
   "name": "mummy",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Hapi request mocking with Zombie.js and Wreck.",
   "main": "lib/mummy",
   "scripts": {
