@@ -37,18 +37,6 @@ objects to be augmented with additional functionality. Using this approach,
 Only requests with URLs matching the hostname and port of one of the servers
 in the pack will be injected. All other requests will be processed normally.
 
-## Wrapping a Full Application
-
-`mummy` can construct a `pack` from a manifest and augment the `Browser` API
-so that all `Browser` instances created in any test cases can make requests to
-the pack as follows:
-
-	var mummy = require("mummy");
-
-	before(function (done) {
-		mummy.extend(manifestPath, done);
-	});
-
 ## Wrapping a Single Browser
 
 Alternatively, `mummy` can wrap a single `Browser` instance as follows (passing
@@ -73,46 +61,19 @@ This can be useful for testing REST APIs. For example:
 
 ## API
 
-### mummy(pack)
+### mummy(server)
 
- + **pack** -- a `Pack` or `Server` instance to create a `Browser` extension
-     for.
+ + **server** -- a `Server` instance to create a `Browser` extension for.
 
 Returns a `Browser` extension suitable for passing to `Browser.extend()`.
 
-### mummy.compose(manifest, [path], [callback])
+### mummy.embalm(server, browser)
 
- + **manifest** -- either a manifest object or a path to a manifest file.
- + **path** -- a path to load relative plugins from. Required if `manifest` is
-     an object, but optional if it is a path. If a manifest path is provided
-     without a plugin path, plugins will be loaded from the directory that the
-     manifest is in.
- + **callback** -- _Optional_ a callback function receiving arguments of the
-     form `(error, browser)` depending on if the pack was successfully created.
-     If not provided, a promise is returned.
-
-Create a `Browser` instance for a `pack` defined by the manifest.
-
-### mummy.embalm(pack, browser)
-
- + **pack** -- a `Pack` or `Server` instance to inject requests into.
+ + **server** -- a `Server` instance to inject requests into.
  + **browser** -- a `Browser` instance to augment with request redirection.
 
 Returns the original `Browser` instance after it has been augmented to redirect
 requests to the pack.
-
-### mummy.extend(manifest, [path], [callback])
-
- + **manifest** -- either a manifest object or a path to a manifest file.
- + **path** -- a path to load relative plugins from. Required if `manifest` is
-     an object, but optional if it is a path. If a manifest path is provided
-     without a plugin path, plugins will be loaded from the directory that the
-     manifest is in.
- + **callback** -- _Optional_ a callback function receiving arguments of the
-     form `(error)` depending on if the pack was successfully created. If not
-     provided, a promise is returned.
-
-Creates and loads a `Browser` extension for the `pack` defined by the manifest.
 
 ### browser.credentials.set(credentials)
 
