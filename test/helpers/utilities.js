@@ -7,7 +7,7 @@ var _       = require("lodash");
 
 module.exports = {
 
-	createPack : function () {
+	createServer : function () {
 		var server    = new Hapi.Server();
 
 		var connections = [

@@ -80,8 +80,8 @@ describe("mummy", function () {
 			done();
 		});
 
-		it("exposes the pack on the browser object", function (done) {
-			expect(browser, "pack").to.have.property("pack", server.pack);
+		it("exposes the server on the browser object", function (done) {
+			expect(browser, "server").to.have.property("server", server);
 			done();
 		});
 	});
@@ -113,7 +113,7 @@ describe("mummy", function () {
 		});
 	});
 
-	describe("wrapping a pack of servers", function () {
+	describe("wrapping a multi-connection server", function () {
 		var defaultText;
 		var dnsText;
 		var portText;
@@ -121,10 +121,10 @@ describe("mummy", function () {
 		var anonymousText2;
 
 		before(function (done) {
-			var pack = Utilities.createPack();
+			var server = Utilities.createServer();
 			var browser;
 
-			Browser.extend(new Mummy(pack));
+			Browser.extend(new Mummy(server));
 			browser = new Browser();
 
 			browser.visit("/")
@@ -155,12 +155,12 @@ describe("mummy", function () {
 			done();
 		});
 
-		it("uses the first server in the pack as the default site", function (done) {
+		it("uses the first connection on the server as the default site", function (done) {
 			expect(defaultText, "default text").to.equal("server 0");
 			done();
 		});
 
-		it("resolves servers using hostname and port", function (done) {
+		it("resolves connections using hostname and port", function (done) {
 			expect(dnsText, "explicit hostname").to.equal("server 0");
 			expect(portText, "explicit port").to.equal("server 1");
 			expect(anonymousText1, "anonymous http").to.equal("server 2");
@@ -169,7 +169,7 @@ describe("mummy", function () {
 		});
 	});
 
-	describe("wrapping a pack that leverages the start-up event", function () {
+	describe("wrapping a server that leverages the start-up event", function () {
 		var server;
 		var spy;
 

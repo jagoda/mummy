@@ -11,11 +11,11 @@ var it       = Lab.it;
 
 describe("The helper utilities", function () {
 
-	it("can create a pack of servers", function (done) {
-		var pack = Utilities.createPack();
+	it("can create a multi-connection server", function (done) {
+		var server = Utilities.createServer();
 
-		expect(pack, "wrong type").to.be.an.instanceOf(Hapi.Server);
-		expect(pack.connections, "incorrect number of servers").to.have.length(4);
+		expect(server, "wrong type").to.be.an.instanceOf(Hapi.Server);
+		expect(server.connections, "incorrect number of servers").to.have.length(4);
 		done();
 	});
 

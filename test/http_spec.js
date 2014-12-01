@@ -20,11 +20,11 @@ describe("The HTTP API extension", function () {
 		var browser;
 
 		before(function (done) {
-			var pack = Utilities.createPack();
+			var server = Utilities.createServer();
 
 			Nock.disableNetConnect();
 
-			Browser.extend(new Mummy(pack));
+			Browser.extend(new Mummy(server));
 			browser = new Browser();
 			done();
 		});
@@ -35,7 +35,7 @@ describe("The HTTP API extension", function () {
 			done();
 		});
 
-		it("uses the first pack server as the default site", function (done) {
+		it("uses the first server connection as the default site", function (done) {
 			browser.http({ method : "GET", url : "/" })
 			.then(function (response) {
 				expect(response.statusCode, "status").to.equal(200);
@@ -253,7 +253,7 @@ describe("The HTTP API extension", function () {
 		});
 	});
 
-	describe("simulating pack start-up", function () {
+	describe("simulating server start-up", function () {
 		var loaded;
 		var request;
 		var started;
@@ -314,7 +314,7 @@ describe("The HTTP API extension", function () {
 			.nodeify(done);
 		});
 
-		it("starts the pack before processing requests", function (done) {
+		it("starts the server before processing requests", function (done) {
 			Sinon.assert.callOrder(loaded, started, request);
 			done();
 		});
