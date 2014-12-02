@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/jagoda/mummy",
   "devDependencies": {
+    "debug": "^2.1.0",
     "gulp": "^3.8.6",
     "gulp-jshint": "^1.8.0",
     "gulp-lab": "0.0.10",
