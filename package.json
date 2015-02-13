@@ -39,7 +39,7 @@
   "dependencies": {
     "bluebird": "^2.9.9",
     "lodash": "^2.4.1",
-    "wreck": "^5.0.1"
+    "request": "^2.53.0"
   },
   "peerDependencies": {
     "hapi": "^8.0.0",
