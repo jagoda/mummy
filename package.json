@@ -29,12 +29,12 @@
     "gulp": "^3.8.6",
     "gulp-jshint": "^1.8.0",
     "gulp-lab": "0.0.10",
-    "hapi": "^8.0.0",
+    "hapi": "^8.2.0",
     "jshint-stylish": "^0.4.0",
     "lab": "^3.2.1",
     "nock": "^0.42.2",
     "sinon": "^1.10.3",
-    "zombie": "^2.0.0-alpha31"
+    "zombie": "^2.5.1"
   },
   "dependencies": {
     "bluebird": "^2.9.9",
@@ -42,7 +42,7 @@
     "request": "^2.53.0"
   },
   "peerDependencies": {
-    "hapi": "^8.0.0",
-    "zombie": "^2.0.0-alpha31"
+    "hapi": "^8.2.0",
+    "zombie": "^2.5.1"
   }
 }
