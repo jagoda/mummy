@@ -45,6 +45,30 @@ Alternatively, `mummy` can wrap a single `Browser` instance as follows:
 	var browser = new Browser();
 	Mummy.embalm(server, browser);
 
+## Event Loop Management
+
+[Zombie][zombie] does not continually evaluate the browser event loop. Rather,
+it runs the event loop in relatively short bursts at keep times to drive browser
+functionality. In many cases this is fine. However, sometimes it is useful for
+test cases to queue events after the initial page load or separate from a user
+interaction (i.e. `browser.pressButton(...)`). In these cases it is useful to
+run the event loop for the entire duration of the test. This can be done with
+something like the following:
+
+	describe("an async interaction", function () {
+		before(function() {
+			browser.runner.start();
+			browser.window.doSomethingInTheFuture();
+		});
+
+		after(function () {
+			browser.runner.stop();
+		});
+
+		it("eventually does something", ...);
+	});
+
+
 ## Raw HTTP Requests
 
 `mummy` also provides the ability to make "raw" HTTP requests to wrapped
@@ -86,6 +110,16 @@ for more details.
 
 Clear any browser credentials. This will cause normal authentication flows to
 be used for requests sent to [Hapi][hapi].
+
+### browser.runner.start()
+
+Causes [Zombie][zombie] to continually execute the event loop until manually
+stopped. This is useful for test suites that schedule events after the initial
+page load. Returns a promise that is resolved when the event loop has stopped.
+
+### browser.runner.stop()
+
+Stops the event loop when it has been started with `browser.runner.start()`.
 
 ### browser.http(options, [callback])
 

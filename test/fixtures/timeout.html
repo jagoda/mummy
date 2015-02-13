@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script>
+window.count = 0;
+
+window.start = function next () {
+	window.count += 1;
+
+	if (window.done && window.count == 6) {
+		window.done();
+	}
+	setTimeout(next, 1000);
+};
+</script>
+</body>
+</html>

@@ -4,7 +4,7 @@
   "description": "Tools for using Zombie.js with Hapi.",
   "main": "lib/mummy",
   "scripts": {
-    "coverage": "gulp coverage && xdg-open coverage/lcov-report/index.html",
+    "coverage": "gulp coverage; xdg-open coverage/lcov-report/index.html",
     "test": "gulp"
   },
   "repository": {
