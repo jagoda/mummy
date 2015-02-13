@@ -1,10 +1,10 @@
 {
   "name": "mummy",
   "version": "2.0.1",
-  "description": "Hapi request mocking with Zombie.js and Wreck.",
+  "description": "Tools for using Zombie.js with Hapi.",
   "main": "lib/mummy",
   "scripts": {
-    "coverage": "gulp coverage && xdg-open coverage.html || open coverage.html",
+    "coverage": "gulp coverage && xdg-open coverage/lcov-report/index.html",
     "test": "gulp"
   },
   "repository": {
@@ -15,8 +15,7 @@
     "zombie",
     "test",
     "testing",
-    "hapi",
-    "wreck"
+    "hapi"
   ],
   "author": "Jeff Jagoda <jeffrey.jagoda@gmail.com>",
   "license": "MIT",

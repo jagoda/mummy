@@ -3,55 +3,52 @@ mummy
 
 [![Build Status](https://travis-ci.org/jagoda/mummy.svg?branch=master)](https://travis-ci.org/jagoda/mummy)
 
-> [Hapi][hapi] request mocking with [Zombie.js][zombie] and [Wreck][wreck].
+> Tools for using [Zombie.js][zombie] with [Hapi][hapi].
 
 	npm install mummy
 
 ## Overview
 
 `mummy` is a browser extension for the [Zombie.js][zombie] headless browser
-testing framework that allows using `Browser` objects with [Hapi][hapi] servers
-without having to start the server.
+testing framework that allows automatic binding of `Browser` instances to
+[Hapi][hapi] servers.
 
 	var Browser = require("zombie");
-	var mummy   = require("mummy");
+	var Mummy   = require("mummy");
 	var browser;
 	
-	Browser.extend(mummy(server));
+	Browser.extend(new Mummy(server));
 	browser = new Browser();
+	
+	browser.visit("/")
+	.then(function () {
+		. . .
+	});
+
 
 ## Extending the Browser API
 
-`zombie` provides an [extension API][zombie-ext] that allows all new `Browser`
-objects to be augmented with additional functionality. Using this approach,
-`mummy` will cause all `Browser` objects to direct their requests to the wrapped
-`hapi` server. Either a pack or individual server may be wrapped as follows:
-
-	var Browser = require("zombie");
-	var mummy   = require("mummy");
-	var browser;
-	
-	Browser.extend(mummy(server));
-	browser = new Browser();
-
-Only requests with URLs matching the hostname and port of one of the servers
-in the pack will be injected. All other requests will be processed normally.
+[Zombie][zombie] provides an [extension API][zombie-ext] that allows all new
+`Browser` objects to be augmented with additional functionality. Using this
+approach, `mummy` will cause all `Browser` objects to direct their requests to
+the wrapped [Hapi][hapi] server. Only requests with URLs matching the hostname
+and port of one of the connections on the server will be injected. All other
+requests will be processed normally.
 
 ## Wrapping a Single Browser
 
-Alternatively, `mummy` can wrap a single `Browser` instance as follows (passing
-either a pack or server):
+Alternatively, `mummy` can wrap a single `Browser` instance as follows:
 
 	var Browser = require("zombie");
-	var mummy   = require("mummy");
+	var Mummy   = require("mummy");
 
 	var browser = new Browser();
-	mummy.embalm(server, browser);
+	Mummy.embalm(server, browser);
 
 ## Raw HTTP Requests
 
-`mummy` also provides the ability to make "raw" HTTP requests to wrapped packs.
-This can be useful for testing REST APIs. For example:
+`mummy` also provides the ability to make "raw" HTTP requests to wrapped
+servers. This can be useful for testing REST APIs. For example:
 
 	var browser = new Browser();
 
@@ -61,32 +58,34 @@ This can be useful for testing REST APIs. For example:
 
 ## API
 
-### mummy(server)
+### Mummy(server)
 
- + **server** -- a `Server` instance to create a `Browser` extension for.
+ + **server** -- a [Hapi][hapi] `Server` instance to create a `Browser`
+   extension for.
 
-Returns a `Browser` extension suitable for passing to `Browser.extend()`.
+Returns a `Browser` extension suitable for passing to [Zombie's][zombie]
+`Browser.extend()`.
 
-### mummy.embalm(server, browser)
+### Mummy.embalm(server, browser)
 
- + **server** -- a `Server` instance to inject requests into.
+ + **server** -- a [Hapi][hapi] `Server` instance to inject requests into.
  + **browser** -- a `Browser` instance to augment with request redirection.
 
 Returns the original `Browser` instance after it has been augmented to redirect
-requests to the pack.
+requests to the server.
 
 ### browser.credentials.set(credentials)
 
  + **credentials** -- an object containing simulated authentication information
 
 Update the browser state to bypass the normal authentication strategies when
-requests are sent to Hapi. See [the Hapi documentation][hapi-inject] for more
-details.
+requests are sent to [Hapi][hapi]. See [the Hapi documentation][hapi-inject]
+for more details.
 
 ### browser.credentials.clear()
 
 Clear any browser credentials. This will cause normal authentication flows to
-be used for requests sent to Hapi.
+be used for requests sent to [Hapi][hapi].
 
 ### browser.http(options, [callback])
 
@@ -102,12 +101,12 @@ The options hash can include the following:
  + **headers** -- an object defining request headers.
 
 Performs a "raw" HTTP request. The [server.inject()][hapi-inject] method from
-`Hapi` is used for requests to wrapped servers while [Wreck][wreck] is used
-for requests to URLs not belonging to wrapped servers. Additional options are
-supported for both (see the respective docs for details).
+[Hapi][hapi] is used for requests to wrapped servers while [Request][request] is
+used for requests to URLs not belonging to wrapped servers. Additional options
+are supported for both (see the respective docs for details).
 
-[hapi]: https://github.com/spumko/hapi "Hapi"
-[hapi-inject]: https://github.com/hapijs/hapi/blob/master/docs/Reference.md#serverinjectoptions-callback "server.inject()"
-[wreck]: https://github.com/hapijs/wreck "Wreck"
+[hapi]: https://github.com/hapijs/hapi "Hapi"
+[hapi-inject]: https://github.com/hapijs/hapi/blob/master/API.md#serverinjectoptions-callback "server.inject()"
+[request]: https://github.com/request/request "Request"
 [zombie]: https://github.com/assaf/zombie "Zombie.js"
-[zombie-ext]: https://github.com/assaf/zombie/tree/master/doc/new#extending-the-browser "Zombie Extensions"
+[zombie-ext]: https://github.com/assaf/zombie#extending-the-browser "Zombie Extensions"
