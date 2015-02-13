@@ -2,20 +2,14 @@
 var Bluebird  = require("bluebird");
 var Browser   = require("zombie");
 var Hapi      = require("hapi");
-var Lab       = require("lab");
 var Mummy     = require("..");
 var Nock      = require("nock");
 var Sinon     = require("sinon");
 var Utilities = require("./helpers/utilities");
 
-var after    = Lab.after;
-var before   = Lab.before;
-var describe = Lab.describe;
-var expect   = Lab.expect;
-var it       = Lab.it;
+var expect = require("chai").expect;
 
 describe("The HTTP API extension", function () {
-
 	describe("making requests", function () {
 		var browser;
 

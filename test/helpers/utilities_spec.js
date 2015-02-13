@@ -1,16 +1,12 @@
 "use strict";
 var Browser   = require("zombie");
 var Hapi      = require("hapi");
-var Lab       = require("lab");
 var Mummy     = require("../..");
 var Utilities = require("./utilities");
 
-var describe = Lab.describe;
-var expect   = Lab.expect;
-var it       = Lab.it;
+var expect = require("chai").expect;
 
 describe("The helper utilities", function () {
-
 	it("can create a multi-connection server", function (done) {
 		var server = Utilities.createServer();
 

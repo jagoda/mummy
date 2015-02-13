@@ -3,12 +3,13 @@ var Browser = require("zombie");
 var FS      = require("fs");
 var Hapi    = require("hapi");
 var Path    = require("path");
-var _       = require("lodash");
+
+var _ = require("lodash");
 
 module.exports = {
 
 	createServer : function () {
-		var server    = new Hapi.Server();
+		var server = new Hapi.Server();
 
 		var connections = [
 			// http://example.com:80
