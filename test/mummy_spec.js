@@ -1,13 +1,13 @@
 "use strict";
-var Browser     = require("zombie");
-var Hapi        = require("hapi");
-var Nock        = require("nock");
-var Lab         = require("lab");
-var Mummy       = require("..");
-var Path        = require("path");
-var Q           = require("q");
-var Sinon       = require("sinon");
-var Utilities   = require("./helpers/utilities");
+var Bluebird  = require("bluebird");
+var Browser   = require("zombie");
+var Hapi      = require("hapi");
+var Nock      = require("nock");
+var Lab       = require("lab");
+var Mummy     = require("..");
+var Path      = require("path");
+var Sinon     = require("sinon");
+var Utilities = require("./helpers/utilities");
 
 var after    = Lab.after;
 var before   = Lab.before;
@@ -207,8 +207,8 @@ describe("mummy", function () {
 			Mummy.embalm(server, browser1);
 			Mummy.embalm(server, browser2);
 
-			Q.all([ browser1.visit("/"), browser2.visit("/"), browser2.visit("/") ])
-			.fail(function () { /* ignore errors */ })
+			Bluebird.all([ browser1.visit("/"), browser2.visit("/"), browser2.visit("/") ])
+			.catch(function () { /* ignore errors */ })
 			.then(function () {
 				expect(spy.callCount, "multiple start events").to.equal(1);
 			})
@@ -243,7 +243,7 @@ describe("mummy", function () {
 		describe("performing a request", function () {
 
 			before(function (done) {
-				browser.visit("/").fin(done);
+				browser.visit("/").finally(done);
 			});
 
 			it("puts the credentials in the request", function (done) {
@@ -261,7 +261,7 @@ describe("mummy", function () {
 
 			describe("performing a request", function () {
 				before(function (done) {
-					browser.visit("/").fin(done);
+					browser.visit("/").finally(done);
 				});
 
 				it("does not put the credentials in the request", function (done) {

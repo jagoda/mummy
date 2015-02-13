@@ -37,8 +37,8 @@
     "zombie": "^2.0.0-alpha31"
   },
   "dependencies": {
+    "bluebird": "^2.9.9",
     "lodash": "^2.4.1",
-    "q": "^1.0.1",
     "wreck": "^5.0.1"
   },
   "peerDependencies": {

@@ -1,10 +1,10 @@
 "use strict";
+var Bluebird  = require("bluebird");
 var Browser   = require("zombie");
 var Hapi      = require("hapi");
 var Lab       = require("lab");
 var Mummy     = require("..");
 var Nock      = require("nock");
-var Q         = require("q");
 var Sinon     = require("sinon");
 var Utilities = require("./helpers/utilities");
 
@@ -89,7 +89,7 @@ describe("The HTTP API extension", function () {
 				expect(response.statusCode, "status").to.equal(200);
 				expect(response.payload, "payload").to.equal("google");
 			})
-			.fin(function () {
+			.finally(function () {
 				Nock.cleanAll();
 			})
 			.nodeify(done);
@@ -98,19 +98,19 @@ describe("The HTTP API extension", function () {
 		it("defaults to the GET method", function (done) {
 			var request = new Nock("http://google.com").get("/").reply(200, "google");
 
-			Q.all([
+			Bluebird.join(
 				browser.http({ url : "/" }),
-				browser.http({ url : "http://google.com" })
-			])
-			.spread(function (local, remote) {
-				expect(local.statusCode, "local status").to.equal(200);
-				expect(local.payload, "local payload").to.equal("server 0");
+				browser.http({ url : "http://google.com" }),
+				function (local, remote) {
+					expect(local.statusCode, "local status").to.equal(200);
+					expect(local.payload, "local payload").to.equal("server 0");
 
-				expect(request.isDone(), "no remote request").to.be.true;
-				expect(remote.statusCode, "remote status").to.equal(200);
-				expect(remote.payload, "remote payload").to.equal("google");
-			})
-			.fin(function () {
+					expect(request.isDone(), "no remote request").to.be.true;
+					expect(remote.statusCode, "remote status").to.equal(200);
+					expect(remote.payload, "remote payload").to.equal("google");
+				}
+			)
+			.finally(function () {
 				Nock.cleanAll();
 			})
 			.nodeify(done);
@@ -293,23 +293,26 @@ describe("The HTTP API extension", function () {
 
 			server.once("start", started);
 
-			Q.ninvoke(server, "register", [
-				{
-					register : plugin1
-				},
-				{
-					register : plugin2
-				}
-			])
+			Bluebird.fromNode(function (callback) {
+				server.register(
+					[
+						{
+							register : plugin1
+						},
+						{
+							register : plugin2
+						}
+					],
+					callback
+				);
+			})
 			.then(function () {
-				var deferred = Q.defer();
-
-				browser.http({}, function () {
-					request();
-					deferred.resolve();
+				return new Bluebird(function (resolve) {
+					browser.http({}, function () {
+						request();
+						resolve();
+					});
 				});
-
-				return deferred.promise;
 			})
 			.nodeify(done);
 		});
