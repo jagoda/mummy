@@ -2,6 +2,6 @@
 var Browser = require("zombie");
 
 before(function (done) {
-	Browser.default.silent = true;
+	Browser.silent = true;
 	done();
 });

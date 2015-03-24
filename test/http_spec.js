@@ -141,7 +141,11 @@ describe("The HTTP API extension", function () {
 			Nock.disableNetConnect();
 
 			browser = Mummy.embalm(server, browser);
-			browser.authenticate().basic("user", "pass");
+			browser.on("authenticate", function (authentication) {
+				authentication.username = "user";
+				authentication.password = "pass";
+			});
+
 			browser.http({})
 			.then(function (_response_) {
 				response = _response_;
