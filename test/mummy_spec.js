@@ -9,6 +9,7 @@ var Sinon     = require("sinon");
 var Utilities = require("./helpers/utilities");
 
 var expect = require("chai").expect;
+var _      = require("lodash");
 
 describe("mummy", function () {
 	before(function () {
@@ -210,6 +211,27 @@ describe("mummy", function () {
 			.catch(function () { /* ignore errors */ })
 			.then(function () {
 				expect(spy.callCount, "multiple start events").to.equal(1);
+			});
+		});
+	});
+
+	describe("wrapping a server that is started out of band", function () {
+		var server;
+
+		before(function (done) {
+			server = new Hapi.Server();
+			server.connection();
+			Mummy.embalm(server, new Browser());
+			server.start(done);
+		});
+
+		// All of a servers connection should be registered as "started" but
+		// should not actually bind to a port.
+		it("stubs the connection listeners", function () {
+			_.each(server.connections, function (connection) {
+				expect(connection._started, "started").to.be.true;
+				expect(connection.info.started, "date").to.be.a("number").that.is.greaterThan(0);
+				expect(connection.listener.address(), "bound").not.to.be.ok;
 			});
 		});
 	});
