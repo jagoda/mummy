@@ -25,7 +25,6 @@
   "homepage": "https://github.com/jagoda/mummy",
   "devDependencies": {
     "chai": "^2.0.0",
-    "debug": "^2.1.0",
     "gulp": "^3.8.6",
     "gulp-istanbul": "^0.6.0",
     "gulp-istanbul-enforcer": "^1.0.3",
@@ -40,6 +39,7 @@
   },
   "dependencies": {
     "bluebird": "^2.9.9",
+    "debug": "^2.1.3",
     "lodash": "^2.4.1",
     "request": "^2.53.0"
   },
