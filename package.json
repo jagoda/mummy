@@ -1,6 +1,6 @@
 {
   "name": "mummy",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Tools for using Zombie.js with Hapi.",
   "main": "lib/mummy",
   "scripts": {
